@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from http import cookies
 import os
 import requests
+from datetime import datetime
 
 
 def set_session_id(session, url):
@@ -43,8 +44,44 @@ def get_waste_schedule_raw_html(session, url):
     return response.content
 
 def extract_schedule_data_from_html(html):
+    table = None
+
     soup = BeautifulSoup(html, 'html.parser')
-    print(soup.prettify())
+    fieldsets = soup.find_all('fieldset')
+
+    for fs in fieldsets:
+      label = fs.find('label')
+
+      if label and label.text == "Your next collection days are":
+        tbl = fs.find('table')
+
+        if tbl:
+          table = tbl
+          break
+
+    if table is None:
+      raise Exception("Could not find table of collection dates in scraped content")
+
+    schedule_data = []
+
+    for row in table.find_all('tr'):
+        cols = row.find_all('td')
+        if len(cols) == 2:
+            # Get the text in the first column (Collection date) and remove leading and trailing whitespace
+            collection_date = cols[0].text.strip()
+            # Parse the collection date using the datetime module
+            collection_date = datetime.strptime(collection_date, '%A, %B %d, %Y')
+            # Convert the collection date to the YYYY-MM-DD format
+            collection_date = collection_date.strftime('%Y-%m-%d')
+
+            # Get the text in the second column (Bin type)
+            bin_type = cols[1].text.strip()
+            schedule_data.append({'collection_date': collection_date, 'bin_type': bin_type})
+
+    if len(schedule_data) == 0:
+        raise Exception('Unable to parse schedule data from table')
+
+    return schedule_data
 
 def main():
     url = os.environ['URL']
@@ -52,4 +89,4 @@ def main():
     set_session_id(session, url)
 
     waste_schedule_html = get_waste_schedule_raw_html(session, url)
-    extract_schedule_data_from_html(waste_schedule_html)
+    schedule_data = extract_schedule_data_from_html(waste_schedule_html)
