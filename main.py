@@ -1,8 +1,11 @@
 from bs4 import BeautifulSoup
 from http import cookies
+from datetime import datetime
+
 import os
 import requests
-from datetime import datetime
+import boto3
+import json
 
 
 def set_session_id(session, url):
@@ -83,10 +86,25 @@ def extract_schedule_data_from_html(html):
 
     return schedule_data
 
+def upload_schedule_data_to_s3(bucket_name, data):
+    s3 = boto3.resource('s3')
+
+    # TODO: rename to be date specific
+    key = datetime.now().strftime('%Y%m%d') + '.json'
+
+    json_string = json.dumps(data)
+
+    print(f'upload to {bucket_name}/{key}')
+    s3.Object(bucket_name, key).put(Body=json_string)
+
 def main():
     url = os.environ['URL']
+    bucket_name = os.environ['BUCKET_NAME']
+
     session = requests.Session()
     set_session_id(session, url)
 
     waste_schedule_html = get_waste_schedule_raw_html(session, url)
     schedule_data = extract_schedule_data_from_html(waste_schedule_html)
+
+    upload_schedule_data_to_s3(bucket_name, schedule_data)
