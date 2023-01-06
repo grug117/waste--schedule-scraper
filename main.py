@@ -54,8 +54,33 @@ def get_waste_schedule_raw_html(session, url):
     logger.info('get_waste_schedule_raw_html - end')
     return response.content
 
+def convert_string_collection_date(date):
+    collection_date = date.strip()
+    # Parse the collection date using the datetime module
+    collection_date = datetime.strptime(collection_date, '%A, %B %d, %Y')
+    # Convert the collection date to the YYYY-MM-DD format
+    collection_date = collection_date.strftime('%Y-%m-%d')
+
+    return collection_date
+
 def extract_schedule_data_from_html(html):
     logger.info('extract_schedule_data_from_html - start')
+    schedule_data = []
+
+    next_collection_info = find_next_collection_info(html)
+
+    if next_collection_info is not None:
+        schedule_data.append(next_collection_info)
+
+    future_collection_info = find_future_collection_info(html)
+
+    schedule_data = schedule_data + future_collection_info
+
+    logger.info('extract_schedule_data_from_html - end')
+    return schedule_data
+
+def find_future_collection_info(html):
+    future_collections = []
     table = None
 
     soup = BeautifulSoup(html, 'html.parser')
@@ -76,29 +101,36 @@ def extract_schedule_data_from_html(html):
 
     logger.info('Got table with data, attempting to parse for schedule info')
 
-    schedule_data = []
-
     for row in table.find_all('tr'):
         cols = row.find_all('td')
         if len(cols) == 2:
-            # Get the text in the first column (Collection date) and remove leading and trailing whitespace
-            collection_date = cols[0].text.strip()
-            # Parse the collection date using the datetime module
-            collection_date = datetime.strptime(collection_date, '%A, %B %d, %Y')
-            # Convert the collection date to the YYYY-MM-DD format
-            collection_date = collection_date.strftime('%Y-%m-%d')
+            # Get the text in the first column (Collection date) and convert it
+            collection_date = convert_string_collection_date(cols[0].text)
 
             # Get the text in the second column (Bin type)
             bin_type = cols[1].text.strip()
-            schedule_data.append({'collection_date': collection_date, 'bin_type': bin_type})
+            future_collections.append({'collection_date': collection_date, 'bin_type': bin_type})
 
-    if len(schedule_data) == 0:
+    if len(future_collections) == 0:
         raise Exception('Unable to parse schedule data from table')
 
-    logger.info(f'got and parsed {len(schedule_data)} items from schedule')
+    logger.info(f'got and parsed {len(future_collections)} items from schedule')
 
-    logger.info('extract_schedule_data_from_html - end')
-    return schedule_data
+    return future_collections
+
+def find_next_collection_info(html):
+    soup = BeautifulSoup(html, 'html.parser')
+
+    next_bin_date = soup.find(class_='ui-bin-next-date').get_text()
+    next_bin_type = soup.find(class_='ui-bin-next-type').get_text()
+
+    if next_bin_type == "Today":
+        return None
+
+    return {
+        'collection_date': convert_string_collection_date(next_bin_date),
+        'bin_type': next_bin_type.strip()
+    }
 
 def upload_schedule_data_to_s3(bucket_name, data):
     logger.info('upload_schedule_data_to_s3 - start')
@@ -122,5 +154,6 @@ def main():
 
     waste_schedule_html = get_waste_schedule_raw_html(session, url)
     schedule_data = extract_schedule_data_from_html(waste_schedule_html)
+    print(schedule_data)
 
     upload_schedule_data_to_s3(bucket_name, schedule_data)
