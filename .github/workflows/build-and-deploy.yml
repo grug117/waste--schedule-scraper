@@ -1,0 +1,43 @@
+name: Build-And-Deplo
+
+on:
+  push:
+    paths:
+      - '*'
+    pull_requests:
+      [ main ]
+    workflow_dispstch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  DEPLOY_ROLE_ARN: arn:aws:iam::703775540847:role/waste-schedule-scraper-deploy-role
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{env.DEPLOY_ROLE_ARN}}
+          role-session-name: deploy-waste-session
+          aws-region: ${{env.AWS_REGION}}
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+
+      - name: Add conda to system path
+        run: |
+          # $CONDA is an environment variable pointing to the root of the miniconda directory
+          echo $CONDA/bin >> $GITHUB_PATH
+
+      - name: Install and bundle dependencies
+        run: ./bundle.sh
