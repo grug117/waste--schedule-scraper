@@ -12,6 +12,7 @@ on:
 defaults:
   run:
     shell: bash
+    working_directory: .
 
 env:
   AWS_REGION: eu-west-1
