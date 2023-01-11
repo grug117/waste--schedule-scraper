@@ -45,7 +45,7 @@ jobs:
           echo $CONDA/bin >> $GITHUB_PATH
 
       - name: Install and bundle dependencies
-        run: ./bundle.sh
+        run: ./bundle.sh base
 
       - name: Upload deployment artifacts
         run: ./upload-artifacts.sh ${{ env.ARTIFACT_REPO_BUCKET_NAME }}
