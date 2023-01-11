@@ -2,7 +2,7 @@
 
 env_vars=( "GITHUB_REPOSITORY" "GITHUB_RUN_NUMBER")
 missing_vars=()
-aws_profile="default"
+aws_profile=""
 
 # check if no argument was passed
 if [ $# -eq 0 ]; then
@@ -11,7 +11,7 @@ if [ $# -eq 0 ]; then
 fi
 
 if [[ "$2" = "--admin" ]]; then
-    aws_profile="admin"
+    aws_profile="--profile admin"
 fi
 
 # Check if each environment variable is set
@@ -43,7 +43,7 @@ for art in *.zip; do
     [ -f "$art" ] || break # if no files, break
     key=$project_name/$current_date/$build_no/$art
     echo "Info: putting $art to s3 artifact repository $bucket_name with path $key"
-    aws s3 cp $art s3://$bucket_name/$key --profile $aws_profile
+    aws s3 cp $art s3://$bucket_name/$key $aws_profile
 
     if [ $? -ne 0 ]; then
         echo "Error: upload $key failed"
