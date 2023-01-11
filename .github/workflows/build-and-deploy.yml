@@ -13,6 +13,7 @@ defaults:
     shell: bash
 
 env:
+  AWS_REGION: eu-west-1
   DEPLOY_ROLE_ARN: arn:aws:iam::703775540847:role/waste-schedule-scraper-deploy-role
 
 jobs:
