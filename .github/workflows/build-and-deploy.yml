@@ -41,3 +41,6 @@ jobs:
 
       - name: Install and bundle dependencies
         run: ./bundle.sh
+
+      - name: Upload deployment artifacts
+        run: ./upload-artifacts.sh ${{ env.ARTIFACT_REPO_BUCKET_NAME }}
