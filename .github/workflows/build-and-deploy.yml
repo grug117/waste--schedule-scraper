@@ -1,9 +1,10 @@
-name: Build-And-Deplo
+name: Build-And-Deploy
 
 on:
   push:
     paths:
       - '*'
+      - '.github/workflows/*'
     pull_requests:
       [ main ]
     workflow_dispstch:
