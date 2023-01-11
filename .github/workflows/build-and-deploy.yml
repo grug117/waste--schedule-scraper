@@ -48,4 +48,4 @@ jobs:
         run: ./bundle.sh base
 
       - name: Upload deployment artifacts
-        run: ./upload-artifacts.sh ${{ env.ARTIFACT_REPO_BUCKET_NAME }}
+        run: ./upload-artifacts.sh ${{vars.ARTIFACT_REPO_BUCKET_NAME}}
