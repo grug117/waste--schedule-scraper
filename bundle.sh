@@ -16,3 +16,5 @@ cd $base_env_site_packages
 zip -r dependencies.zip *
 mv dependencies.zip $working_dir/dependencies.zip
 cd $working_dir
+
+zip -r build.zip *.py

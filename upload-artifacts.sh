@@ -54,4 +54,4 @@ for art in *.zip; do
 done
 
 echo "all done"
-
+#TODO: export the keys that were updated so we know what s3 key to pass to the lambda function and lambda layer
