@@ -31,7 +31,7 @@ jobs:
       - name: set creds as tf variables
         run: |
           touch tf/creds.tfvars
-          echo access_key_id="$ACCESS_KEY" >> tf/creds.tfvars
+          echo access_key_id="$AWS_ACCESS_KEY_ID" >> tf/creds.tfvars
           cat tf/creds.tfvars
           #echo secret_access_key="$SECRET_KEY" >> tf/creds.tfvars
           #echo session_token="$SESSION_TOKEN" >> tf/creds.tfvars
