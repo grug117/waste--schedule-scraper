@@ -7,7 +7,7 @@ on:
       - '.github/workflows/*'
     pull_requests:
       [ main ]
-    workflow_dispstch:
+  workflow_dispstch:
 
 defaults:
   run:

@@ -1,0 +1,51 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+deffaults:
+  run:
+    shell: bash
+
+env:
+  AWS_REGION: eu-west-1
+  DEPLOY_ROLE_ARN: arn:aws:iam::703775540847:role/waste-schedule-scraper-deploy-role
+
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: ${{ env.DEPLOY_ROLE_ARN }}
+          role-ression-name: deploy-waste-session
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+
+      - name: Move AWS Credentials to Terraform Directory
+        run: |
+          mv $HOME/.aws/credentials ./tf
+          mv $HOME/.aws/config ./tf
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          # terraform_version: 0.13.0:
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_API_TOKEN }}
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform Plan
+        run: terraform plan -no-color
