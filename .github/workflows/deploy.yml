@@ -48,6 +48,8 @@ jobs:
 
       - name: Terraform Format
         run: terraform fmt -check
+        working-directory: tf
 
       - name: Terraform Plan
         run: terraform plan -no-color -var-file="tf/creds.tfvars"
+        working-directory: tf
