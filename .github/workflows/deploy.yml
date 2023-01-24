@@ -34,10 +34,7 @@ jobs:
           python-version: '3.8'
 
       - name: Move AWS Credentials to Terraform Directory
-        run: |
-          ls -la $HOME/.aws/
-          mv $HOME/.aws/credentials ./tf
-          mv $HOME/.aws/config ./tf
+        run: echo ${{ env.AWS_ACCESS_KEY_ID }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
