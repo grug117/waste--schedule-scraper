@@ -1,4 +1,4 @@
-name: Build-And-Deploy
+name: Build
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - '.github/workflows/*'
     pull_requests:
       [ main ]
-  workflow_dispstch:
+  workflow_dispatch:
 
 defaults:
   run:
