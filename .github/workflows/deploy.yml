@@ -31,9 +31,9 @@ jobs:
       - name: set creds as tf variables
         run: |
           touch tf/creds.tfvars
-          echo access_key_id="$AWS_ACCESS_KEY_ID" >> tf/creds.tfvars
-          echo secret_access_key="$AWS_SECRET_ACCESS_KEY" >> tf/creds.tfvars
-          echo session_token="$AWS_SESSION_TOKEN" >> tf/creds.tfvars
+          echo -e access_key_id="$AWS_ACCESS_KEY_ID"\n >> tf/creds.tfvars
+          echo -e secret_access_key="$AWS_SECRET_ACCESS_KEY"\n >> tf/creds.tfvars
+          echo -e session_token="$AWS_SESSION_TOKEN"\n >> tf/creds.tfvars
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v3
