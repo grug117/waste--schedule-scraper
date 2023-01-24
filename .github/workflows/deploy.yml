@@ -51,5 +51,5 @@ jobs:
         working-directory: tf
 
       - name: Terraform Plan
-        run: terraform plan -no-color -var-file="tf/creds.tfvars"
+        run: terraform plan -no-color -var-file="creds.tfvars"
         working-directory: tf
