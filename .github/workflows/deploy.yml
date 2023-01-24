@@ -46,6 +46,10 @@ jobs:
           # terraform_version: 0.13.0:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_API_TOKEN }}
 
+      - name: Terraform Init
+        run: terraform init
+        working-directory: tf
+
       - name: Terraform Plan
         run: terraform plan -no-color -var-file="tf/creds.tfvars"
         working-directory: tf
