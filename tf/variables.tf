@@ -3,12 +3,14 @@ variable "environment" {
   default = "dev"
 }
 
-variable "deploy_role_arn" {
-  type    = string
-  default = "arn:aws:iam::703775540847:role/waste-schedule-scraper-deploy-rol"
+variable "access_key_id" {
+  type = string
 }
 
-variable "session_name" {
-  type    = string
-  default = "deploy-waste-session"
+variable "secret_access_key" {
+  type = string
+}
+
+variable "session_token" {
+  type = string
 }

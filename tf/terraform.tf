@@ -18,6 +18,7 @@ terraform {
 
 provider "aws" {
   region                  = "eu-west-1"
-  shared_config_file      = "./config"
-  shared_credentials_file = "./credentials"
+  access_key = var.access_key_id
+  secret_key = var.secret_access_key
+  token = var.session_token
 }

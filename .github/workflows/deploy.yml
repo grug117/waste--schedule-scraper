@@ -28,13 +28,21 @@ jobs:
           role-ression-name: deploy-waste-session
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: set creds as tf variables
+        run: |
+          touch tf/creds.tfvars
+          echo access_key_id="$ACCESS_KEY" >> tf/creds.tfvars
+          echo secret_access_key="$SECRET_KEY" >> tf/creds.tfvars
+          echo session_token="$SESSION_TOKEN" >> tf/creds.tfvars
+        env:
+          ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
       - name: Set up Python 3.8
         uses: actions/setup-python@v3
         with:
           python-version: '3.8'
-
-      - name: Move AWS Credentials to Terraform Directory
-        run: echo ${{ env.AWS_ACCESS_KEY_ID }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -46,4 +54,4 @@ jobs:
         run: terraform fmt -check
 
       - name: Terraform Plan
-        run: terraform plan -no-color
+        run: terraform plan -no-color -var-file="tf/creds.tfvars"
