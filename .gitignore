@@ -168,3 +168,6 @@ build.zip
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+# Other
+**.DS_Store

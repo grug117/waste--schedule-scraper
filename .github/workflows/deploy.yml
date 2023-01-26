@@ -28,13 +28,6 @@ jobs:
           role-ression-name: deploy-waste-session
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: set creds as tf variables
-        run: |
-          touch tf/creds.tfvars
-          echo -e access_key_id="$AWS_ACCESS_KEY_ID"\n >> tf/creds.tfvars
-          echo -e secret_access_key="$AWS_SECRET_ACCESS_KEY"\n >> tf/creds.tfvars
-          echo -e session_token="$AWS_SESSION_TOKEN"\n >> tf/creds.tfvars
-
       - name: Set up Python 3.8
         uses: actions/setup-python@v3
         with:
@@ -51,5 +44,5 @@ jobs:
         working-directory: tf
 
       - name: Terraform Plan
-        run: terraform plan -no-color -var-file="creds.tfvars"
+        run: terraform plan -no-color
         working-directory: tf
