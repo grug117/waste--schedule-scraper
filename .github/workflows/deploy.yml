@@ -2,6 +2,11 @@ name: Deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      destroy:
+        type: boolean
+        default: false
+        description: destroy infra
 
 defaults:
   run:
@@ -44,5 +49,16 @@ jobs:
         working-directory: tf
 
       - name: Terraform Plan
+        if: ${{ !inputs.destroy }}
         run: terraform plan -no-color
+        working-directory: tf
+
+      - name: Terraform Apply
+        if: ${{ !inputs.destroy }}
+        run: terraform apply -no-color -auto-approve
+        working-directory: tf
+
+      - name: Terraform Destroy
+        if: ${{ inputs.destroy }}
+        run: terraform destroy -no-color -auto-approve
         working-directory: tf
